@@ -9,7 +9,10 @@ export const errorHandler = (
 	next: NextFunction
 ) => {
 	if (err instanceof RequestValidationError) {
-		console.log('handling this error as a request validation error');
+		const formattedErrors = err.errors.map(error => {
+			return { messsage: error.msg, field: error.param}
+		});
+		return res.status(400).send({ errors: formattedErrors });
 	}
 
 	if (err instanceof DatabaseConnectionError) {
@@ -19,3 +22,12 @@ export const errorHandler = (
 
 	res.status(400).send({ message: err.message });
 };
+
+/* 
+Common response structurure that will be sent our from any server
+{
+	errors: {
+		message: string, field?: string
+	}[]
+}
+*/
